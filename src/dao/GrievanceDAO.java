@@ -14,8 +14,8 @@ public class GrievanceDAO {
      * Insert new grievance, return generated ID.
      */
     public int insertGrievance(Grievance g) {
-        String sql = "INSERT INTO Grievance (citizen_id, category_id, officer_id, description, status, submitted_date, priority) " +
-                     "VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Grievance (citizen_id, category_id, officer_id, description, status, submitted_date, priority) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement ps = DBConnection.getConnection()
                 .prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setInt(1, g.getCitizenId());
@@ -28,7 +28,9 @@ public class GrievanceDAO {
             ps.executeUpdate();
 
             ResultSet keys = ps.getGeneratedKeys();
-            if (keys.next()) return keys.getInt(1);
+            if (keys.next()) {
+                return keys.getInt(1);
+            }
 
         } catch (SQLException e) {
             System.out.println("[GrievanceDAO] Insert Error: " + e.getMessage());
@@ -41,14 +43,13 @@ public class GrievanceDAO {
      */
     public List<Grievance> getAllActiveGrievances() {
         List<Grievance> list = new ArrayList<>();
-        String sql = "SELECT g.*, c.name AS citizen_name, cat.name AS cat_name, cat.weight " +
-                     "FROM Grievance g " +
-                     "JOIN Citizen c   ON g.citizen_id  = c.id " +
-                     "JOIN Category cat ON g.category_id = cat.id " +
-                     "WHERE g.status != 'Resolved' " +
-                     "ORDER BY g.priority DESC";
-        try (Statement stmt = DBConnection.getConnection().createStatement();
-             ResultSet rs   = stmt.executeQuery(sql)) {
+        String sql = "SELECT g.*, c.name AS citizen_name, cat.name AS cat_name, cat.weight "
+                + "FROM Grievance g "
+                + "JOIN Citizen c   ON g.citizen_id  = c.id "
+                + "JOIN Category cat ON g.category_id = cat.id "
+                + "WHERE g.status != 'Resolved' "
+                + "ORDER BY g.priority DESC";
+        try (Statement stmt = DBConnection.getConnection().createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
                 list.add(mapRow(rs));
             }
@@ -63,13 +64,12 @@ public class GrievanceDAO {
      */
     public List<Grievance> getAllGrievances() {
         List<Grievance> list = new ArrayList<>();
-        String sql = "SELECT g.*, c.name AS citizen_name, cat.name AS cat_name, cat.weight " +
-                     "FROM Grievance g " +
-                     "JOIN Citizen c   ON g.citizen_id  = c.id " +
-                     "JOIN Category cat ON g.category_id = cat.id " +
-                     "ORDER BY g.priority DESC";
-        try (Statement stmt = DBConnection.getConnection().createStatement();
-             ResultSet rs   = stmt.executeQuery(sql)) {
+        String sql = "SELECT g.*, c.name AS citizen_name, cat.name AS cat_name, cat.weight "
+                + "FROM Grievance g "
+                + "JOIN Citizen c   ON g.citizen_id  = c.id "
+                + "JOIN Category cat ON g.category_id = cat.id "
+                + "ORDER BY g.priority DESC";
+        try (Statement stmt = DBConnection.getConnection().createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
                 list.add(mapRow(rs));
             }
@@ -83,15 +83,17 @@ public class GrievanceDAO {
      * Fetch single grievance by ID.
      */
     public Grievance getGrievanceById(int id) {
-        String sql = "SELECT g.*, c.name AS citizen_name, cat.name AS cat_name, cat.weight " +
-                     "FROM Grievance g " +
-                     "JOIN Citizen c   ON g.citizen_id  = c.id " +
-                     "JOIN Category cat ON g.category_id = cat.id " +
-                     "WHERE g.id = ?";
+        String sql = "SELECT g.*, c.name AS citizen_name, cat.name AS cat_name, cat.weight "
+                + "FROM Grievance g "
+                + "JOIN Citizen c   ON g.citizen_id  = c.id "
+                + "JOIN Category cat ON g.category_id = cat.id "
+                + "WHERE g.id = ?";
         try (PreparedStatement ps = DBConnection.getConnection().prepareStatement(sql)) {
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
-            if (rs.next()) return mapRow(rs);
+            if (rs.next()) {
+                return mapRow(rs);
+            }
         } catch (SQLException e) {
             System.out.println("[GrievanceDAO] Error: " + e.getMessage());
         }
@@ -132,36 +134,35 @@ public class GrievanceDAO {
      */
     public List<String[]> getGrievancesPerCategory() {
 
-    List<String[]> data = new ArrayList<>();
+        List<String[]> data = new ArrayList<>();
 
-    String sql =
-            "SELECT cat.name, " +
-            "COUNT(g.id) AS total, " +
-            "AVG(DATEDIFF(CURDATE(), g.submitted_date)) AS avg_days " +
-            "FROM Grievance g " +
-            "JOIN Category cat ON g.category_id = cat.id " +
-            "GROUP BY cat.name " +
-            "ORDER BY total DESC";
+        String sql
+                = "SELECT cat.name, "
+                + "COUNT(g.id) AS total, "
+                + "AVG(DATEDIFF(CURDATE(), g.submitted_date)) AS avg_days "
+                + "FROM Grievance g "
+                + "JOIN Category cat ON g.category_id = cat.id "
+                + "GROUP BY cat.name "
+                + "ORDER BY total DESC";
 
-    try (Statement stmt = DBConnection.getConnection().createStatement();
-         ResultSet rs = stmt.executeQuery(sql)) {
+        try (Statement stmt = DBConnection.getConnection().createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
 
-        while (rs.next()) {
+            while (rs.next()) {
 
-            data.add(new String[]{
+                data.add(new String[]{
                     rs.getString("name"),
                     rs.getString("total"),
                     String.format("%.1f", rs.getDouble("avg_days"))
-            });
+                });
+            }
+
+        } catch (SQLException e) {
+            System.out.println("[GrievanceDAO] Analytics Error: "
+                    + e.getMessage());
         }
 
-    } catch (SQLException e) {
-        System.out.println("[GrievanceDAO] Analytics Error: "
-                + e.getMessage());
+        return data;
     }
-
-    return data;
-}
     // ── Helper ──────────────────────────────────────────────
 
     private Grievance mapRow(ResultSet rs) throws SQLException {

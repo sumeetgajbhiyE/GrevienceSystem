@@ -10,9 +10,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 /**
- * HTMLGenerator — writes HTML output files
- * priority_dashboard.html  → current priority queue
- * analytics.html           → category-wise count + avg resolution days
+ * HTMLGenerator — writes HTML output files priority_dashboard.html → current
+ * priority queue analytics.html → category-wise count + avg resolution days
  */
 public class HTMLGenerator {
 
@@ -52,58 +51,61 @@ public class HTMLGenerator {
 
         StringBuilder sb = new StringBuilder();
         sb.append("<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'>")
-          .append("<title>Grievance Priority Dashboard</title>")
-          .append(STYLE)
-          .append("</head><body>")
-          .append("<header>")
-          .append("<h1>🏛️ Grievance Priority Dashboard</h1>")
-          .append("<p>Generated: ").append(time).append(" | Top priority grievances for officer action</p>")
-          .append("</header>")
-          .append("<div class='container'>")
-          .append("<table>")
-          .append("<thead><tr>")
-          .append("<th>#</th><th>GID</th><th>Category</th><th>Description</th>")
-          .append("<th>Citizen</th><th>Date Submitted</th><th>Priority Score</th><th>Status</th>")
-          .append("</tr></thead><tbody>");
+                .append("<title>Grievance Priority Dashboard</title>")
+                .append(STYLE)
+                .append("</head><body>")
+                .append("<header>")
+                .append("<h1>🏛️ Grievance Priority Dashboard</h1>")
+                .append("<p>Generated: ").append(time).append(" | Top priority grievances for officer action</p>")
+                .append("</header>")
+                .append("<div class='container'>")
+                .append("<table>")
+                .append("<thead><tr>")
+                .append("<th>#</th><th>GID</th><th>Category</th><th>Description</th>")
+                .append("<th>Citizen</th><th>Date Submitted</th><th>Priority Score</th><th>Status</th>")
+                .append("</tr></thead><tbody>");
 
         if (topGrievances == null || topGrievances.length == 0) {
             sb.append("<tr><td colspan='8' style='text-align:center;padding:30px;color:#718096;'>")
-              .append("No active grievances.</td></tr>");
+                    .append("No active grievances.</td></tr>");
         } else {
             for (int i = 0; i < topGrievances.length; i++) {
                 Grievance g = topGrievances[i];
-                if (g == null) continue;
+                if (g == null) {
+                    continue;
+                }
 
                 String priorityClass = g.getPriority() >= 40 ? "high" : g.getPriority() >= 20 ? "med" : "low";
-                String statusClass   = g.getStatus().replace(" ", "-");
+                String statusClass = g.getStatus().replace(" ", "-");
                 String desc = g.getDescription() != null && g.getDescription().length() > 50
                         ? g.getDescription().substring(0, 50) + "..."
                         : g.getDescription();
 
                 sb.append("<tr>")
-                  .append("<td>").append(i + 1).append("</td>")
-                  .append("<td><b>").append(g.getId()).append("</b></td>")
-                  .append("<td>").append(g.getCategoryName()).append("</td>")
-                  .append("<td>").append(desc).append("</td>")
-                  .append("<td>").append(g.getCitizenName() != null ? g.getCitizenName() : "—").append("</td>")
-                  .append("<td>").append(g.getSubmittedDate()).append("</td>")
-                  .append("<td class='").append(priorityClass).append("'>").append(g.getPriority()).append("</td>")
-                  .append("<td><span class='badge ").append(statusClass).append("'>")
-                  .append(g.getStatus()).append("</span></td>")
-                  .append("</tr>");
+                        .append("<td>").append(i + 1).append("</td>")
+                        .append("<td><b>").append(g.getId()).append("</b></td>")
+                        .append("<td>").append(g.getCategoryName()).append("</td>")
+                        .append("<td>").append(desc).append("</td>")
+                        .append("<td>").append(g.getCitizenName() != null ? g.getCitizenName() : "—").append("</td>")
+                        .append("<td>").append(g.getSubmittedDate()).append("</td>")
+                        .append("<td class='").append(priorityClass).append("'>").append(g.getPriority()).append("</td>")
+                        .append("<td><span class='badge ").append(statusClass).append("'>")
+                        .append(g.getStatus()).append("</span></td>")
+                        .append("</tr>");
             }
         }
 
         sb.append("</tbody></table></div>")
-          .append("<footer>Soft Polynomials Pvt. Ltd. | Project P6 — Grievance Priority Queue</footer>")
-          .append("</body></html>");
+                .append("<footer>Soft Polynomials Pvt. Ltd. | Project P6 — Grievance Priority Queue</footer>")
+                .append("</body></html>");
 
         writeFile(filename, sb.toString());
         System.out.println("[HTML] Written: " + filename);
     }
 
     /**
-     * Write analytics.html — category-wise count + avg resolution days + officer leaderboard.
+     * Write analytics.html — category-wise count + avg resolution days +
+     * officer leaderboard.
      */
     public static void writeAnalytics(List<String[]> categoryData, List<Officer> leaderboard) {
         String filename = "analytics.html";
@@ -111,40 +113,38 @@ public class HTMLGenerator {
 
         StringBuilder sb = new StringBuilder();
         sb.append("<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'>")
-          .append("<title>Grievance Analytics</title>")
-          .append(STYLE)
-          .append("</head><body>")
-          .append("<header>")
-          .append("<h1>📊 Grievance Analytics Report</h1>")
-          .append("<p>Generated: ").append(time).append("</p>")
-          .append("</header>")
-          .append("<div class='container'>")
-
-          // Category table
-          .append("<h2 style='margin:24px 0 12px;'>Category-wise Summary</h2>")
-          .append("<table><thead><tr>")
-          .append("<th>Category</th><th>Total Grievances</th><th>Avg Resolution Days</th>")
-          .append("</tr></thead><tbody>");
+                .append("<title>Grievance Analytics</title>")
+                .append(STYLE)
+                .append("</head><body>")
+                .append("<header>")
+                .append("<h1>📊 Grievance Analytics Report</h1>")
+                .append("<p>Generated: ").append(time).append("</p>")
+                .append("</header>")
+                .append("<div class='container'>")
+                // Category table
+                .append("<h2 style='margin:24px 0 12px;'>Category-wise Summary</h2>")
+                .append("<table><thead><tr>")
+                .append("<th>Category</th><th>Total Grievances</th><th>Avg Resolution Days</th>")
+                .append("</tr></thead><tbody>");
 
         if (categoryData.isEmpty()) {
             sb.append("<tr><td colspan='3' style='text-align:center;'>No data available.</td></tr>");
         } else {
             for (String[] row : categoryData) {
                 sb.append("<tr>")
-                  .append("<td>").append(row[0]).append("</td>")
-                  .append("<td>").append(row[1]).append("</td>")
-                  .append("<td>").append(row[2]).append(" days</td>")
-                  .append("</tr>");
+                        .append("<td>").append(row[0]).append("</td>")
+                        .append("<td>").append(row[1]).append("</td>")
+                        .append("<td>").append(row[2]).append(" days</td>")
+                        .append("</tr>");
             }
         }
 
         sb.append("</tbody></table>")
-
-          // Officer leaderboard
-          .append("<h2 style='margin:32px 0 12px;'>🏆 Officer Leaderboard (This Month)</h2>")
-          .append("<table><thead><tr>")
-          .append("<th>Rank</th><th>Officer Name</th><th>Department</th><th>Resolved This Month</th>")
-          .append("</tr></thead><tbody>");
+                // Officer leaderboard
+                .append("<h2 style='margin:32px 0 12px;'>🏆 Officer Leaderboard (This Month)</h2>")
+                .append("<table><thead><tr>")
+                .append("<th>Rank</th><th>Officer Name</th><th>Department</th><th>Resolved This Month</th>")
+                .append("</tr></thead><tbody>");
 
         if (leaderboard == null || leaderboard.isEmpty()) {
             sb.append("<tr><td colspan='4' style='text-align:center;'>No resolved grievances this month.</td></tr>");
@@ -154,17 +154,17 @@ public class HTMLGenerator {
                 Officer o = leaderboard.get(i);
                 String rank = i < 3 ? medals[i] : String.valueOf(i + 1);
                 sb.append("<tr>")
-                  .append("<td>").append(rank).append("</td>")
-                  .append("<td>").append(o.getName()).append("</td>")
-                  .append("<td>").append(o.getDepartment()).append("</td>")
-                  .append("<td><b>").append(o.getResolvedCount()).append("</b></td>")
-                  .append("</tr>");
+                        .append("<td>").append(rank).append("</td>")
+                        .append("<td>").append(o.getName()).append("</td>")
+                        .append("<td>").append(o.getDepartment()).append("</td>")
+                        .append("<td><b>").append(o.getResolvedCount()).append("</b></td>")
+                        .append("</tr>");
             }
         }
 
         sb.append("</tbody></table></div>")
-          .append("<footer>Soft Polynomials Pvt. Ltd. | Project P6 Analytics</footer>")
-          .append("</body></html>");
+                .append("<footer>Soft Polynomials Pvt. Ltd. | Project P6 Analytics</footer>")
+                .append("</body></html>");
 
         writeFile(filename, sb.toString());
         System.out.println("[HTML] Written: " + filename);
@@ -177,10 +177,11 @@ public class HTMLGenerator {
             System.out.println("[HTML] Error writing " + filename + ": " + e.getMessage());
         }
     }
- private static String escapeHtml(String text) {
-    return text.replace("&", "&amp;")
-               .replace("<", "&lt;")
-               .replace(">", "&gt;")
-               .replace("\"", "&quot;");
-}   
+
+    private static String escapeHtml(String text) {
+        return text.replace("&", "&amp;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;")
+                .replace("\"", "&quot;");
+    }
 }

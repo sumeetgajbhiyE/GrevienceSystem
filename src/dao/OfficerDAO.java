@@ -12,8 +12,7 @@ public class OfficerDAO {
     public List<Officer> getAllOfficers() {
         List<Officer> list = new ArrayList<>();
         String sql = "SELECT * FROM Officer ORDER BY resolved_count DESC";
-        try (Statement stmt = DBConnection.getConnection().createStatement();
-             ResultSet rs   = stmt.executeQuery(sql)) {
+        try (Statement stmt = DBConnection.getConnection().createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
                 list.add(new Officer(
                         rs.getInt("id"),
@@ -58,35 +57,34 @@ public class OfficerDAO {
     /**
      * Top officer leaderboard — most resolved this month.
      */
-        public List<Officer> getLeaderboard() {
+    public List<Officer> getLeaderboard() {
 
-    List<Officer> list = new ArrayList<>();
+        List<Officer> list = new ArrayList<>();
 
-    String sql =
-        "SELECT * " +
-        "FROM Officer " +
-        "ORDER BY resolved_count DESC";
+        String sql
+                = "SELECT * "
+                + "FROM Officer "
+                + "ORDER BY resolved_count DESC";
 
-    try (Statement st =
-            DBConnection.getConnection().createStatement();
-         ResultSet rs = st.executeQuery(sql)) {
+        try (Statement st
+                = DBConnection.getConnection().createStatement(); ResultSet rs = st.executeQuery(sql)) {
 
-        while (rs.next()) {
+            while (rs.next()) {
 
-            Officer o = new Officer();
+                Officer o = new Officer();
 
-            o.setId(rs.getInt("id"));
-            o.setName(rs.getString("name"));
-            o.setDepartment(rs.getString("department"));
-            o.setResolvedCount(rs.getInt("resolved_count"));
+                o.setId(rs.getInt("id"));
+                o.setName(rs.getString("name"));
+                o.setDepartment(rs.getString("department"));
+                o.setResolvedCount(rs.getInt("resolved_count"));
 
-            list.add(o);
+                list.add(o);
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
         }
 
-    } catch (SQLException e) {
-        System.out.println(e.getMessage());
+        return list;
     }
-
-    return list;
-}
 }

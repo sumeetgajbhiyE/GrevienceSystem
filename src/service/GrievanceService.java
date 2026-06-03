@@ -8,21 +8,19 @@ import java.time.LocalDate;
 import java.util.List;
 
 /**
- * GrievanceService — Business Logic Layer
- * Connects Console Menu ↔ DAOs ↔ Heap
+ * GrievanceService — Business Logic Layer Connects Console Menu ↔ DAOs ↔ Heap
  */
 public class GrievanceService {
 
-    private final GrievanceDAO     grievanceDAO     = new GrievanceDAO();
-    private final CategoryDAO      categoryDAO      = new CategoryDAO();
-    private final CitizenDAO       citizenDAO       = new CitizenDAO();
-    private final OfficerDAO       officerDAO       = new OfficerDAO();
+    private final GrievanceDAO grievanceDAO = new GrievanceDAO();
+    private final CategoryDAO categoryDAO = new CategoryDAO();
+    private final CitizenDAO citizenDAO = new CitizenDAO();
+    private final OfficerDAO officerDAO = new OfficerDAO();
     private final StatusHistoryDAO statusHistoryDAO = new StatusHistoryDAO();
 
     private final GrievanceMinHeap heap = new GrievanceMinHeap();
 
     // ── On startup: load all active grievances into heap ────
-
     public void initHeap() {
         List<Grievance> active = grievanceDAO.getAllActiveGrievances();
         heap.buildHeap(active);
@@ -30,7 +28,6 @@ public class GrievanceService {
     }
 
     // ── 1. Submit Grievance ─────────────────────────────────
-
     public int submitGrievance(int citizenId, int categoryId, String description) {
         Category cat = categoryDAO.getCategoryById(categoryId);
         if (cat == null) {
@@ -57,7 +54,6 @@ public class GrievanceService {
     }
 
     // ── 2. Officer View — Top 10 by Priority ───────────────
-
     public Grievance[] getTop10ForOfficer() {
         // Rebuild heap fresh from DB to apply latest aging
         List<Grievance> active = grievanceDAO.getAllActiveGrievances();
@@ -66,7 +62,6 @@ public class GrievanceService {
     }
 
     // ── 3. Update Status ────────────────────────────────────
-
     public boolean updateStatus(int grievanceId, String newStatus, String remarks) {
         boolean updated = grievanceDAO.updateStatus(grievanceId, newStatus);
         if (updated) {
@@ -86,29 +81,42 @@ public class GrievanceService {
     }
 
     // ── 4. View History of One Grievance ───────────────────
-
     public List<StatusHistory> getGrievanceHistory(int grievanceId) {
         return statusHistoryDAO.getHistoryByGrievanceId(grievanceId);
     }
 
     // ── 5. Analytics ────────────────────────────────────────
-
     public List<String[]> getAnalytics() {
         return grievanceDAO.getGrievancesPerCategory();
     }
 
     // ── Bonus: Leaderboard ──────────────────────────────────
-
     public List<Officer> getLeaderboard() {
         return officerDAO.getLeaderboard();
     }
 
     // ── Helper lookups for menu ─────────────────────────────
+    public List<Category> getAllCategories() {
+        return categoryDAO.getAllCategories();
+    }
 
-    public List<Category> getAllCategories()    { return categoryDAO.getAllCategories(); }
-    public List<Citizen>  getAllCitizens()      { return citizenDAO.getAllCitizens(); }
-    public List<Officer>  getAllOfficers()      { return officerDAO.getAllOfficers(); }
-    public List<Grievance> getAllGrievances()   { return grievanceDAO.getAllGrievances(); }
-    public Grievance getGrievanceById(int id)  { return grievanceDAO.getGrievanceById(id); }
-    public GrievanceMinHeap getHeap()          { return heap; }
+    public List<Citizen> getAllCitizens() {
+        return citizenDAO.getAllCitizens();
+    }
+
+    public List<Officer> getAllOfficers() {
+        return officerDAO.getAllOfficers();
+    }
+
+    public List<Grievance> getAllGrievances() {
+        return grievanceDAO.getAllGrievances();
+    }
+
+    public Grievance getGrievanceById(int id) {
+        return grievanceDAO.getGrievanceById(id);
+    }
+
+    public GrievanceMinHeap getHeap() {
+        return heap;
+    }
 }
