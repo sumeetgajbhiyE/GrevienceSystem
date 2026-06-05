@@ -20,7 +20,7 @@ public class GrievanceDAO {
                 .prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setInt(1, g.getCitizenId());
             ps.setInt(2, g.getCategoryId());
-            ps.setInt(3, g.getOfficerId() == 0 ? 1 : g.getOfficerId()); // default officer 1
+            ps.setInt(3, g.getOfficerId()); // default officer 1
             ps.setString(4, g.getDescription());
             ps.setString(5, g.getStatus());
             ps.setDate(6, Date.valueOf(g.getSubmittedDate()));

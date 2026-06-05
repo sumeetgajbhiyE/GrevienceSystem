@@ -28,7 +28,7 @@ public class GrievanceService {
     }
 
     // ── 1. Submit Grievance ─────────────────────────────────
-    public int submitGrievance(int citizenId, int categoryId, String description) {
+        public int submitGrievance(int citizenId, int categoryId, int officerId, String description)  {
         Category cat = categoryDAO.getCategoryById(categoryId);
         if (cat == null) {
             System.out.println("[Service] Invalid category ID.");
@@ -36,13 +36,14 @@ public class GrievanceService {
         }
 
         Grievance g = new Grievance(citizenId, categoryId, description, LocalDate.now());
+        g.setOfficerId(officerId);  // Set the selected officer
         g.setCategoryName(cat.getName());
         g.setCategoryWeight(cat.getWeight());
 
         // Calculate priority BEFORE insert
         int priority = GrievanceMinHeap.calculatePriority(g);
         g.setPriority(priority);
-
+        g.setOfficerId(officerId);
         int id = grievanceDAO.insertGrievance(g);
         if (id > 0) {
             g.setId(id);
@@ -118,5 +119,25 @@ public class GrievanceService {
 
     public GrievanceMinHeap getHeap() {
         return heap;
+    }
+        // ════════════════════════════════════════════════════════
+    // NEW: Auto-generate HTML Reports
+    // ════════════════════════════════════════════════════════
+
+    /**
+     * Regenerates priority_dashboard.html with current top grievances.
+     */
+    public void refreshPriorityDashboard() {
+        Grievance[] top = getTop10ForOfficer();
+        html.HTMLGenerator.writePriorityDashboard(top);
+    }
+
+    /**
+     * Regenerates analytics.html with current data.
+     */
+    public void refreshAnalytics() {
+        List<String[]> categoryData = getAnalytics();
+        List<Officer> leaderboard = getLeaderboard();
+        html.HTMLGenerator.writeAnalytics(categoryData, leaderboard);
     }
 }

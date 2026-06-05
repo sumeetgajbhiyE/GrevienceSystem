@@ -39,6 +39,8 @@ public class HTMLGenerator {
           .med   { color: #c05621; font-weight: bold; }
           .low   { color: #2f855a; }
           footer { text-align: center; padding: 20px; color: #718096; font-size: 0.85rem; }
+         .refresh-banner { background: #e6fffa; border-left: 4px solid #38b2ac; 
+         padding: 10px 20px; margin-bottom: 20px; font-size: 0.9rem; color: #234e52; }
         </style>
         """;
 
@@ -51,6 +53,7 @@ public class HTMLGenerator {
 
         StringBuilder sb = new StringBuilder();
         sb.append("<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'>")
+                .append("<meta http-equiv='refresh' content='10'>") // Auto-refresh every 10 seconds
                 .append("<title>Grievance Priority Dashboard</title>")
                 .append(STYLE)
                 .append("</head><body>")
@@ -59,6 +62,9 @@ public class HTMLGenerator {
                 .append("<p>Generated: ").append(time).append(" | Top priority grievances for officer action</p>")
                 .append("</header>")
                 .append("<div class='container'>")
+                .append("<div class='refresh-banner'>")
+                .append("💡 This page auto-refreshes every 10 seconds. Keep it open to see live updates. | Last updated: ")
+                .append(time).append("</div>")
                 .append("<table>")
                 .append("<thead><tr>")
                 .append("<th>#</th><th>GID</th><th>Category</th><th>Description</th>")
@@ -112,7 +118,8 @@ public class HTMLGenerator {
         String time = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MMM-yyyy HH:mm"));
 
         StringBuilder sb = new StringBuilder();
-        sb.append("<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'>")
+                sb.append("<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'>")
+                .append("<meta http-equiv='refresh' content='30'>")  // Auto-refresh every 30 seconds
                 .append("<title>Grievance Analytics</title>")
                 .append(STYLE)
                 .append("</head><body>")
@@ -121,6 +128,9 @@ public class HTMLGenerator {
                 .append("<p>Generated: ").append(time).append("</p>")
                 .append("</header>")
                 .append("<div class='container'>")
+                .append("<div class='refresh-banner'>")
+                .append("💡 This page auto-refreshes every 30 seconds. | Last updated: ")
+                .append(time).append("</div>")        
                 // Category table
                 .append("<h2 style='margin:24px 0 12px;'>Category-wise Summary</h2>")
                 .append("<table><thead><tr>")

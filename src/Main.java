@@ -3,6 +3,8 @@ import html.HTMLGenerator;
 import model.*;
 import service.GrievanceService;
 import util.DBConnection;
+import java.awt.Desktop;
+import java.io.File;
 
 import java.util.List;
 import java.util.Scanner;
@@ -14,10 +16,10 @@ public class Main {
 
     public static void main(String[] args) {
 
-        System.out.println("╔══════════════════════════════════════════════╗");
+        System.out.println("╔=============================================╗");
         System.out.println("║     CITIZEN GRIEVANCE MANAGEMENT SYSTEM     ║");
         System.out.println("║         Soft Polynomials Pvt. Ltd.          ║");
-        System.out.println("╚══════════════════════════════════════════════╝");
+        System.out.println("╚=============================================╝");
 
         service.initHeap();
 
@@ -76,9 +78,9 @@ public class Main {
 
     private static void printMenu() {
 
-        System.out.println("\n┌─────────────────────────────────────────┐");
+        System.out.println("\n┌ =======================================┐");
         System.out.println("│               MAIN MENU                 │");
-        System.out.println("├─────────────────────────────────────────┤");
+        System.out.println("├-----------------------------------------┤");
         System.out.println("│ 1. Submit Grievance                     │");
         System.out.println("│ 2. Officer View (Top 10 by Priority)    │");
         System.out.println("│ 3. Update Grievance Status              │");
@@ -88,7 +90,7 @@ public class Main {
         System.out.println("│ 7. Officer Leaderboard                  │");
         System.out.println("│ 8. Show Heap Array State                │");
         System.out.println("│ 0. Exit                                 │");
-        System.out.println("└─────────────────────────────────────────┘");
+        System.out.println("└=========================================┘");
     }
 
     private static void submitGrievance() {
@@ -120,19 +122,29 @@ public class Main {
         }
 
         int categoryId = readInt("Select Category ID: ");
-
+         List<Officer> officers = service.getAllOfficers();
+        System.out.println("\nAvailable Officers:");
+        for (Officer o : officers) {
+            System.out.printf("[%d] %s | %s | Resolved=%d%n", 
+                o.getId(), o.getName(), o.getDepartment(), o.getResolvedCount());
+        }
+        int officerId = readInt("Select Officer ID: ");
         System.out.print("Enter Description: ");
         String description = scanner.nextLine();
 
-        int grievanceId
-                = service.submitGrievance(
+              int grievanceId = service.submitGrievance(
                         citizenId,
                         categoryId,
+                        officerId,
                         description
                 );
 
         if (grievanceId > 0) {
             System.out.println("✅ Grievance Submitted. ID = " + grievanceId);
+
+            // Refresh dashboard and open browser
+            service.refreshPriorityDashboard();
+            openHtmlFile("priority_dashboard.html");
         } else {
             System.out.println("❌ Submission Failed.");
         }
@@ -171,6 +183,7 @@ public class Main {
         HTMLGenerator.writePriorityDashboard(grievances);
 
         System.out.println("priority_dashboard.html generated.");
+        openHtmlFile("priority_dashboard.html");
     }
 
     private static void updateStatus() {
@@ -235,6 +248,10 @@ public class Main {
 
         if (success) {
             System.out.println("✅ Status Updated.");
+
+            // Refresh dashboard and open browser
+            service.refreshPriorityDashboard();
+            openHtmlFile("priority_dashboard.html");
         } else {
             System.out.println("❌ Update Failed.");
         }
@@ -287,6 +304,7 @@ public class Main {
         HTMLGenerator.writeAnalytics(data, leaderboard);
 
         System.out.println("\n📄 analytics.html generated.");
+        openHtmlFile("analytics.html");
     }
 
     private static void searchByID() {
@@ -368,5 +386,27 @@ public class Main {
         DBConnection.closeConnection();
 
         System.out.println("System Exited.");
+    }
+
+    private static void openHtmlFile(String filename) {
+        try {
+            File htmlFile = new File(filename);
+            if (!htmlFile.exists()) {
+                System.out.println("⚠️ File not found: " + filename);
+                return;
+            }
+
+            if (Desktop.isDesktopSupported()) {
+                Desktop.getDesktop().browse(htmlFile.toURI());
+                System.out.println("🌐 Opened " + filename + " in browser.");
+            } else {
+                Runtime.getRuntime().exec(new String[]{"xdg-open", filename});
+                System.out.println("🌐 Opened " + filename + " in browser (xdg-open).");
+            }
+
+        } catch (Exception e) {
+            System.out.println("⚠️ Could not open browser: " + e.getMessage());
+            System.out.println("   Please open " + filename + " manually.");
+        }
     }
 }
