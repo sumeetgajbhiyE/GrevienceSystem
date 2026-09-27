@@ -1,5 +1,5 @@
 # Project P6 — Grievance Priority Queue
-**Soft Polynomials Pvt. Ltd. | Team: Amit + Sumeet**
+**Soft Polynomials Pvt. Ltd. | Sumeet**
 
 ---
 
@@ -68,7 +68,7 @@ java  -cp out;mysql-connector.jar Main
 
 ---
 
-## Priority Formula (Sumeet must explain at Viva)
+## Priority Formula 
 
 ```
 Priority Score = (categoryWeight × 10) + ageInDays + agingBonus
@@ -88,7 +88,7 @@ Where:
 
 ---
 
-## Heap Operations (Draw on whiteboard at Viva)
+## Heap Operations 
 
 **Insert:** Add to end → percolateUp
 **ExtractMin:** Remove root → move last to root → percolateDown
